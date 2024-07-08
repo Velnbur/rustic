@@ -375,7 +375,8 @@ If NOCONFIRM is non-nil, install all dependencies without prompting user."
                              rustic-doc-convert-prog
                              (lambda (_p)
                                (message "Finished converting docs for std"))
-                             "std")
+                             "std"
+                             projectile-project-root)
   (if rustic-doc-current-project
       (rustic-doc-convert-current-package)
     (message "Setup is converting std. If you want to convert local dependencies, activate rustic-doc-mode when you are in a rust project and run `rustic-doc-convert-current-package")))
