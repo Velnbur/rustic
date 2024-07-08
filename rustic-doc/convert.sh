@@ -1,20 +1,44 @@
 #!/usr/bin/env bash
 
 LUA_FILTER="$HOME/.local/bin/rustic-doc-filter.lua"
+
 function get_toolchain {
-    rustup show | sed -nr 's/(.*) \(default\)/\1/p' | head -n 1
+    # check if rustup is installed
+    if ! command -v rustup &> /dev/null; then
+        local toolchain_file
+
+        # check if `rust-toolchain.toml` file exists
+        if [ -f "$PROJECT_ROOT/rust-toolchain.toml" ]; then
+            toolchain_file="rust-toolchain.toml"
+        elif [ -f "$PROJECT_ROOT/rust-toolchain" ]; then
+            toolchain_file="rust-toolchain"
+        else
+           echo "Error: rust-toolchain{.toml} file not found" >&2
+           return 1
+        fi
+
+        # get toolchain from `rust-toolchain{.toml}` file instead
+        if [[ "$toolchain_file" == *".toml" ]]; then
+            sed -nr 's/channel = "(.*)"/\1/p' "$toolchain_file" | head -n 1
+        else
+            cat "$toolchain_file" | head -n 1
+        fi
+    else
+        rustup show | sed -nr 's/(.*) \(default\)/\1/p' | head -n 1
+    fi
 }
 
 if [ "$1" = "" ] || [ "$1" = "--help"  ]; then
     MY_NAME="$(basename "$0")"
     echo "Usage:"
-    echo "  $MY_NAME <library>"
-    echo "  $MY_NAME <docs src> <docs org dst>"
+    echo "  $MY_NAME <library> [project-root]"
+    echo "  $MY_NAME <docs src> <docs org dst> [project-root]"
     exit 0
 fi
 
 DOC_PATH="$1"
 DEST_DIR="$2"
+PROJECT_ROOT="$3"
 
 if [ "$DEST_DIR" = "" ]; then
     LIBRARY="$1"

@@ -279,7 +279,7 @@ See buffer *cargo-makedocs* for more info")
 Do not check `fd' when MISSING-FD is non-nil."
   (when (not missing-fd)
     (when  (> 8 (string-to-number
-                  (substring (shell-command-to-string "fd --version") 3 4)))
+                 (substring (shell-command-to-string "fd --version") 3 4)))
       (message "Your version of fd is too old, please install a recent version, maybe through cargo.")))
 
   (when (>= 11 (string-to-number
@@ -324,7 +324,8 @@ If NOCONFIRM is non-nil, install all dependencies without prompting user."
                              rustic-doc-convert-prog
                              (lambda (_p)
                                (message "Finished converting docs for std"))
-                             "std")
+                             "std"
+                             projectile-project-root)
   (if rustic-doc-current-project
       (rustic-doc-convert-current-package)
     (message "Setup is converting std. If you want to convert local dependencies, activate rustic-doc-mode when you are in a rust project and run `rustic-doc-convert-current-package")))
